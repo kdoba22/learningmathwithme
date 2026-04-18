@@ -6,7 +6,6 @@ import FeedbackSection from "./FeedbackSection";
 import ProblemCountSelector from "./ProblemCountSelector";
 import FlashcardHeader from "./FlashcardHeader";
 import Flashcard from "./Flashcard";
-import WelcomeBanner from "./WelcomeBanner";
 import Button from "./Button";
 
 function generateProblem(max) {
