@@ -1,0 +1,234 @@
+.flashcard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 8rem;
+  padding: 2rem;
+}
+
+.flashcard-container h2 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.flashcard-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 400px;
+  font-size: 1rem;
+  color: #555;
+}
+
+.flashcard {
+  background: #fff;
+  border: 3px solid #50c878;
+  border-radius: 16px;
+  padding: 2.5rem 4rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.problem {
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 0;
+  color: #213547;
+}
+
+.answer-form {
+  display: flex;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.answer-input {
+  padding: 0.6rem 1rem;
+  font-size: 1.5rem;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  width: 160px;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.answer-input::-webkit-outer-spin-button,
+.answer-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.answer-input:focus {
+  outline: none;
+  border-color: #50c878;
+}
+
+.submit-answer-btn {
+  padding: 0.6rem 1.4rem;
+  font-size: 1.2rem;
+  background-color: #50c878;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.submit-answer-btn:hover {
+  background-color: #3daf63;
+}
+
+.feedback {
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.correct-feedback p {
+  color: #2a7a2a;
+  font-weight: bold;
+}
+
+.wrong-feedback p {
+  color: #c0392b;
+  font-weight: bold;
+}
+
+.peeked-feedback p {
+  color: #e67e22;
+  font-weight: bold;
+}
+
+.wrong-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.try-again-btn {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.try-again-btn:hover {
+  background-color: #2176ae;
+}
+
+.peek-btn {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  background-color: #e67e22;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.peek-btn:hover {
+  background-color: #ca6f1e;
+}
+
+.next-btn {
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.4rem;
+  font-size: 1.1rem;
+  background-color: #50c878;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.next-btn:hover {
+  background-color: #3daf63;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: #646cff;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.back-btn:hover {
+  color: #535bf2;
+}
+
+.problem-count-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.count-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.3rem;
+  background-color: #50c878;
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  min-width: 80px;
+}
+
+.count-btn:hover {
+  background-color: #3daf63;
+}
+
+/* Summary screen */
+.summary {
+  text-align: center;
+}
+
+.summary-score {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #213547;
+  margin: 0;
+}
+
+.summary-pct {
+  font-size: 1.8rem;
+  color: #50c878;
+  font-weight: bold;
+  margin: 0;
+}
+
+.perfect { color: #f1c40f; font-size: 1.3rem; font-weight: bold; }
+.great { color: #2ecc71; font-size: 1.2rem; font-weight: bold; }
+.good { color: #3498db; font-size: 1.2rem; font-weight: bold; }
+.keep-trying { color: #e67e22; font-size: 1.2rem; font-weight: bold; }
+
+.summary-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .flashcard-container {
+    margin-top: 6rem;
+  }
+
+  .problem {
+    font-size: 2.2rem;
+  }
+
+  .flashcard {
+    padding: 2rem 2.5rem;
+  }
+}

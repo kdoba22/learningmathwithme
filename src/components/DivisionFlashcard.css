@@ -1,0 +1,40 @@
+.division-page {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 8rem;
+  padding: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.division-left {
+  margin-top: 0 !important;
+  padding: 0 !important;
+  flex: 0 0 auto;
+}
+
+.division-right {
+  flex: 0 0 auto;
+  padding-top: 0.5rem;
+}
+
+.remainder-notice {
+  color: #e67e22;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .division-page {
+    flex-direction: column;
+    align-items: center;
+    margin-top: 6rem;
+  }
+
+  .division-right {
+    width: 100%;
+  }
+}

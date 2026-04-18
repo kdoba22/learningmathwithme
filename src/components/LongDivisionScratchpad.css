@@ -1,0 +1,203 @@
+.scratchpad {
+  background: #fafafa;
+  border: 2px solid #50c878;
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+  min-width: 220px;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-family: "Courier New", monospace;
+}
+
+.scratchpad-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.5rem;
+}
+
+.scratchpad-clear-btn {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.scratchpad-clear-btn:hover {
+  background-color: #c0392b;
+}
+
+.long-division-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Quotient sits above the house */
+.ld-quotient-row {
+  display: flex;
+  align-items: center;
+}
+
+.ld-divisor-spacer {
+  width: 3rem;
+}
+
+.ld-quotient-box {
+  border-bottom: 2px solid #333;
+  flex: 1;
+  padding-bottom: 2px;
+}
+
+.ld-quotient-input {
+  width: 100%;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+/* Division house row */
+.ld-house-row {
+  display: flex;
+  align-items: stretch;
+}
+
+.ld-divisor {
+  display: flex;
+  align-items: center;
+  padding-right: 0.3rem;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #213547;
+}
+
+.ld-house-symbol {
+  border-left: 3px solid #333;
+  border-top: 3px solid #333;
+  border-radius: 0 4px 0 0;
+  flex: 1;
+  padding: 4px 6px;
+}
+
+.ld-dividend-box {
+  width: 100%;
+}
+
+.ld-dividend-input {
+  width: 100%;
+  font-size: 1.1rem;
+  text-align: center;
+  background: #f0f0f0;
+  cursor: default;
+  color: #213547;
+  font-weight: bold;
+}
+
+/* Work steps */
+.ld-step {
+  border-left: 3px solid #50c878;
+  padding-left: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ld-step-label {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: bold;
+}
+
+.ld-step-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ld-step-field-label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #555;
+  width: 1.2rem;
+}
+
+.ld-underline input {
+  border-bottom: 2px solid #333 !important;
+  border-radius: 0;
+}
+
+/* Remainder row */
+.ld-remainder-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+/* Shared input style */
+.ld-input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.3rem 0.5rem;
+  font-size: 1rem;
+  font-family: "Courier New", monospace;
+  background: #fff;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.ld-input:focus {
+  border-color: #50c878;
+}
+
+.ld-step-input {
+  flex: 1;
+  width: 100%;
+}
+
+/* Add/remove step buttons */
+.ld-step-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.ld-step-btn {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.85rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.ld-step-btn:hover {
+  background-color: #2176ae;
+}
+
+.ld-step-btn-remove {
+  background-color: #e67e22;
+}
+
+.ld-step-btn-remove:hover {
+  background-color: #ca6f1e;
+}
+
+@media (max-width: 768px) {
+  .scratchpad {
+    max-width: 100%;
+    min-width: unset;
+    width: 100%;
+  }
+}

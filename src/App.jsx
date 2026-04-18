@@ -1,35 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import Header from "./components/Header";
+import UserForm from "./components/UserForm";
+import AdditionFlashcard from "./components/AdditionFlashcard";
+import SubtractionFlashcard from "./components/SubtractionFlashcard";
+import MultiplicationFlashcard from "./components/MultiplicationFlashcard";
+import DivisionFlashcard from "./components/DivisionFlashcard";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [userSettings, setUserSettings] = useState(null);
+  const [started, setStarted] = useState(false);
+
+  const handleStart = (settings) => {
+    setUserSettings(settings);
+    setStarted(true);
+  };
+
+  const handleBack = () => {
+    setStarted(false);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+      <Header />
+      {!started ? (
+        <UserForm onStart={handleStart} initialSettings={userSettings} />
+      ) : userSettings.operation === "Addition" ? (
+        <AdditionFlashcard settings={userSettings} onBack={handleBack} />
+      ) : userSettings.operation === "Subtraction" ? (
+        <SubtractionFlashcard settings={userSettings} onBack={handleBack} />
+      ) : userSettings.operation === "Multiplication" ? (
+        <MultiplicationFlashcard settings={userSettings} onBack={handleBack} />
+      ) : userSettings.operation === "Division" ? (
+        <DivisionFlashcard settings={userSettings} onBack={handleBack} />
+      ) : (
+        <div style={{ marginTop: "10rem", textAlign: "center" }}>
+          <p>{userSettings.operation} coming soon!</p>
+          <button onClick={handleBack}>Back</button>
+        </div>
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
