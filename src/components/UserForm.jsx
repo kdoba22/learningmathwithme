@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./UserForm.css";
+import Button from "./Button";
 
 function UserForm({ onStart, initialSettings }) {
   const [name, setName] = useState(initialSettings?.name || "");
@@ -104,9 +105,10 @@ function UserForm({ onStart, initialSettings }) {
           <option value="Division">Division</option>
         </select>
       </div>
-      <button type="submit" className="submit-button" disabled={!isFormValid()}>
+      <Button variant="primary" type="submit" disabled={!isFormValid()}
+        style={{ fontSize: "1.2rem", padding: "0.75rem 1.5rem" }}>
         GO
-      </button>
+      </Button>
     </form>
   );
 }

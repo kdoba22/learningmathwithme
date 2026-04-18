@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./LongDivisionScratchpad.css";
+import Button from "./Button";
 
 function LongDivisionScratchpad({ divisor, dividend, clearSignal }) {
   const [quotientWork, setQuotientWork] = useState("");
@@ -36,7 +37,7 @@ function LongDivisionScratchpad({ divisor, dividend, clearSignal }) {
     <div className="scratchpad">
       <div className="scratchpad-title">
         Scratchpad
-        <button className="scratchpad-clear-btn" onClick={handleClear}>Clear</button>
+        <Button variant="destructive" className="btn-sm" onClick={handleClear}>Clear</Button>
       </div>
 
       <div className="long-division-layout">
@@ -124,9 +125,9 @@ function LongDivisionScratchpad({ divisor, dividend, clearSignal }) {
 
         {/* Add / remove step buttons */}
         <div className="ld-step-controls">
-          <button className="ld-step-btn" onClick={addStep}>+ Step</button>
+          <Button variant="secondary" className="btn-sm" onClick={addStep}>+ Step</Button>
           {steps.length > 1 && (
-            <button className="ld-step-btn ld-step-btn-remove" onClick={removeStep}>− Step</button>
+            <Button variant="danger" className="btn-sm" onClick={removeStep}>− Step</Button>
           )}
         </div>
 

@@ -2,6 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import "./AdditionFlashcard.css";
 import "./MultiplicationFlashcard.css";
 import { getMaxNumber } from "../utils/mathUtils";
+import SummaryScreen from "./SummaryScreen";
+import FeedbackSection from "./FeedbackSection";
+import FlashcardHeader from "./FlashcardHeader";
+import Flashcard from "./Flashcard";
+import WelcomeBanner from "./WelcomeBanner";
+import Button from "./Button";
 
 function generateRandomProblem(max) {
   const a = Math.floor(Math.random() * max) + 1;
@@ -9,33 +15,12 @@ function generateRandomProblem(max) {
   return { a, b, answer: a * b };
 }
 
-function resetStats() {
-  return {
-    score: 0,
-    wrongCount: 0,
-    currentNum: 0,
-    triedOnce: false,
-    peeked: false,
-    done: false,
-    feedback: null,
-    userAnswer: "",
-    problem: null,
-    problems: [],
-    selectedTable: null,
-    totalProblems: null,
-  };
-}
-
 function MultiplicationFlashcard({ settings, onBack }) {
   const { name, grade, experience } = settings;
   const max = getMaxNumber(grade, experience);
 
-  // "times-table" | "random" — which top-level mode the user is in
   const [activeType, setActiveType] = useState("times-table");
-
-  // sub-screens: "select" | "times-table" | "random-setup" | "random"
   const [screen, setScreen] = useState("select");
-
   const [selectedTable, setSelectedTable] = useState(null);
   const [totalProblems, setTotalProblems] = useState(null);
   const [problems, setProblems] = useState([]);
@@ -152,17 +137,18 @@ function MultiplicationFlashcard({ settings, onBack }) {
 
   const total = screen === "times-table" ? problems.length : totalProblems;
   const displayNum = screen === "times-table" ? currentNum + 1 : currentNum;
+  const title = screen === "times-table" ? `${selectedTable}'s Times Table` : "Random Multiplication";
 
   const ModeToggle = () => (
     <div className="mode-toggle">
       <button
-        className={`mode-toggle-btn ${activeType === "times-table" ? "active" : ""}`}
+        className={`btn btn-toggle ${activeType === "times-table" ? "active" : ""}`}
         onClick={() => activeType !== "times-table" && switchType("times-table")}
       >
         Times Tables
       </button>
       <button
-        className={`mode-toggle-btn ${activeType === "random" ? "active" : ""}`}
+        className={`btn btn-toggle ${activeType === "random" ? "active" : ""}`}
         onClick={() => activeType !== "random" && switchType("random")}
       >
         Random
@@ -170,94 +156,77 @@ function MultiplicationFlashcard({ settings, onBack }) {
     </div>
   );
 
-  // Summary screen
   if (done) {
-    const finalTotal = screen === "times-table" ? problems.length : totalProblems;
-    const pct = finalTotal > 0 ? Math.round((score / finalTotal) * 100) : 0;
-    const title = screen === "times-table" ? `${selectedTable}'s Times Table` : "Random Multiplication";
     return (
-      <div className="flashcard-container summary multiplication-container">
+      <div className="multiplication-container">
         <ModeToggle />
-        <p className="multiplication-welcome">Great job{name ? `, ${name}` : ""}! 🎉</p>
-        <p className="summary-title">{title}</p>
-        <p className="summary-score">{score} / {finalTotal} correct</p>
-        <p className="summary-pct">{pct}%</p>
-        {pct === 100 && <p className="perfect">Perfect score! 🌟</p>}
-        {pct >= 80 && pct < 100 && <p className="great">Really great work! Keep it up! 💪</p>}
-        {pct >= 60 && pct < 80 && <p className="good">Good effort! A little more practice and you'll get there! 📚</p>}
-        {pct < 60 && <p className="keep-trying">Keep practicing — you're getting better every time! 🚀</p>}
-        <div className="summary-actions">
-          {screen === "times-table" ? (
-            <button className="count-btn" onClick={() => startTimesTable(selectedTable)}>Play Again</button>
-          ) : (
-            <button className="count-btn" onClick={() => startRandom(totalProblems)}>Play Again</button>
-          )}
-          <button className="count-btn" onClick={() => {
-            applyReset();
-            setScreen(activeType === "times-table" ? "select" : "random-setup");
-          }}>
-            Try Another
-          </button>
-          <button className="back-btn" onClick={onBack}>← Change Settings</button>
-        </div>
+        <SummaryScreen
+          name={name}
+          score={score}
+          total={total}
+          title={title}
+          onPlayAgain={() => screen === "times-table" ? startTimesTable(selectedTable) : startRandom(totalProblems)}
+          onBack={onBack}
+          extraActions={
+            <Button variant="primary" className="btn-lg" onClick={() => {
+              applyReset();
+              setScreen(activeType === "times-table" ? "select" : "random-setup");
+            }}>
+              Try Another
+            </Button>
+          }
+        />
       </div>
     );
   }
 
-  // Times table selector
   if (screen === "select") {
     return (
       <div className="flashcard-container multiplication-container">
         <ModeToggle />
-        <p className="multiplication-welcome">Welcome{name ? `, ${name}` : ""}! 👋</p>
+        <p className="multiplication-welcome"><WelcomeBanner name={name} /></p>
         <p>Which times table would you like to practice?</p>
         <div className="times-table-grid">
           {Array.from({ length: 15 }, (_, i) => (
-            <button key={i} className="count-btn" onClick={() => startTimesTable(i)}>
+            <Button key={i} variant="primary" className="btn-lg" onClick={() => startTimesTable(i)}>
               {i}s
-            </button>
+            </Button>
           ))}
         </div>
-        <button className="back-btn" onClick={onBack}>← Back</button>
+        <Button variant="outline" onClick={onBack}>← Back</Button>
       </div>
     );
   }
 
-  // Random problem count selector
   if (screen === "random-setup") {
     return (
       <div className="flashcard-container multiplication-container">
         <ModeToggle />
-        <p className="multiplication-welcome">Welcome{name ? `, ${name}` : ""}! 👋</p>
+        <p className="multiplication-welcome"><WelcomeBanner name={name} /></p>
         <p>How many multiplication problems would you like to solve?</p>
         <div className="problem-count-buttons">
           {[10, 25, 50, 100].map((n) => (
-            <button key={n} className="count-btn" onClick={() => startRandom(n)}>
+            <Button key={n} variant="primary" className="btn-lg" onClick={() => startRandom(n)}>
               {n}
-            </button>
+            </Button>
           ))}
         </div>
-        <button className="back-btn" onClick={onBack}>← Back</button>
+        <Button variant="outline" onClick={onBack}>← Back</Button>
       </div>
     );
   }
 
-  // Flashcard screen
   return (
     <div className="flashcard-container multiplication-container">
       <ModeToggle />
-      <div className="flashcard-header">
-        <span>
-          {screen === "times-table"
-            ? `${selectedTable}'s Table — ${displayNum} of ${total}`
-            : `Problem ${displayNum} of ${total}`}
-        </span>
-        <span>✅ {score} correct</span>
-      </div>
+      <FlashcardHeader
+        current={displayNum}
+        total={total}
+        score={score}
+        label={screen === "times-table" ? `${selectedTable}'s Table — ${displayNum} of ${total}` : null}
+      />
 
-      <div className="flashcard">
-        <p className="problem">{problem.a} × {problem.b} = ?</p>
-      </div>
+      <Flashcard>{problem.a} × {problem.b} = ?</Flashcard>
 
       {feedback === null && (
         <form onSubmit={handleSubmitAnswer} className="answer-form">
@@ -269,39 +238,22 @@ function MultiplicationFlashcard({ settings, onBack }) {
             className="answer-input"
             placeholder="Your answer"
           />
-          <button type="submit" className="submit-answer-btn">Check</button>
+          <Button variant="primary" type="submit">Check</Button>
         </form>
       )}
 
-      {feedback === "correct" && (
-        <div className="feedback correct-feedback">
-          <p>✅ Correct! {problem.a} × {problem.b} = {problem.answer}</p>
-          <button className="next-btn" onClick={handleNext}>
-            {displayNum >= total ? "See Results" : "Next →"}
-          </button>
-        </div>
-      )}
+      <FeedbackSection
+        feedback={feedback}
+        problem={problem}
+        formatProblem={(p) => `${p.a} × ${p.b}`}
+        formatAnswer={(p) => `${p.answer}`}
+        onNext={handleNext}
+        onTryAgain={handleTryAgain}
+        onPeek={handlePeek}
+        isLast={displayNum >= total}
+      />
 
-      {feedback === "wrong" && (
-        <div className="feedback wrong-feedback">
-          <p>❌ Not quite! Try again or peek at the answer.</p>
-          <div className="wrong-actions">
-            <button className="try-again-btn" onClick={handleTryAgain}>Try Again</button>
-            <button className="peek-btn" onClick={handlePeek}>Peek at Answer</button>
-          </div>
-        </div>
-      )}
-
-      {feedback === "peeked" && (
-        <div className="feedback peeked-feedback">
-          <p>👀 The answer is <strong>{problem.answer}</strong>. (Marked as incorrect)</p>
-          <button className="next-btn" onClick={handleNext}>
-            {displayNum >= total ? "See Results" : "Next →"}
-          </button>
-        </div>
-      )}
-
-      <button className="back-btn" onClick={onBack}>← Back</button>
+      <Button variant="outline" onClick={onBack}>← Back</Button>
     </div>
   );
 }

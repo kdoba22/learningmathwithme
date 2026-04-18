@@ -1,10 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./AdditionFlashcard.css";
 import { getMaxNumber } from "../utils/mathUtils";
+import SummaryScreen from "./SummaryScreen";
+import FeedbackSection from "./FeedbackSection";
+import ProblemCountSelector from "./ProblemCountSelector";
+import FlashcardHeader from "./FlashcardHeader";
+import Flashcard from "./Flashcard";
+import WelcomeBanner from "./WelcomeBanner";
+import Button from "./Button";
 
 function generateProblem(max) {
   const a = Math.floor(Math.random() * max) + 1;
-  const b = Math.floor(Math.random() * a) + 1; // b is always <= a, so answer >= 0
+  const b = Math.floor(Math.random() * a) + 1;
   return { a, b, answer: a - b };
 }
 
@@ -38,26 +45,19 @@ function SubtractionFlashcard({ settings, onBack }) {
   };
 
   useEffect(() => {
-    if (problem && inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (problem && inputRef.current) inputRef.current.focus();
   }, [problem]);
 
   useEffect(() => {
-    if (feedback === null && inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (feedback === null && inputRef.current) inputRef.current.focus();
   }, [feedback]);
 
   const handleSubmitAnswer = (e) => {
     e.preventDefault();
     const parsed = parseInt(userAnswer);
     if (isNaN(parsed)) return;
-
     if (parsed === problem.answer) {
-      if (!triedOnce) {
-        setScore((s) => s + 1);
-      }
+      if (!triedOnce) setScore((s) => s + 1);
       setFeedback("correct");
     } else {
       setTriedOnce(true);
@@ -90,51 +90,18 @@ function SubtractionFlashcard({ settings, onBack }) {
   };
 
   if (!totalProblems) {
-    return (
-      <div className="flashcard-container">
-        <h2>Welcome{name ? `, ${name}` : ""}! 👋</h2>
-        <p>How many subtraction problems would you like to solve?</p>
-        <div className="problem-count-buttons">
-          {[10, 25, 50, 100].map((n) => (
-            <button key={n} className="count-btn" onClick={() => startSession(n)}>
-              {n}
-            </button>
-          ))}
-        </div>
-        <button className="back-btn" onClick={onBack}>← Back</button>
-      </div>
-    );
+    return <ProblemCountSelector name={name} operation="subtraction" onSelect={startSession} onBack={onBack} />;
   }
 
   if (done) {
-    const pct = Math.round((score / totalProblems) * 100);
-    return (
-      <div className="flashcard-container summary">
-        <h2>Great job{name ? `, ${name}` : ""}! 🎉</h2>
-        <p className="summary-score">{score} / {totalProblems} correct</p>
-        <p className="summary-pct">{pct}%</p>
-        {pct === 100 && <p className="perfect">Perfect score! 🌟</p>}
-        {pct >= 80 && pct < 100 && <p className="great">Really great work! Keep it up! 💪</p>}
-        {pct >= 60 && pct < 80 && <p className="good">Good effort! A little more practice and you'll get there! 📚</p>}
-        {pct < 60 && <p className="keep-trying">Keep practicing — you're getting better every time! 🚀</p>}
-        <div className="summary-actions">
-          <button className="count-btn" onClick={() => startSession(totalProblems)}>Play Again</button>
-          <button className="back-btn" onClick={onBack}>← Change Settings</button>
-        </div>
-      </div>
-    );
+    return <SummaryScreen name={name} score={score} total={totalProblems} onPlayAgain={() => startSession(totalProblems)} onBack={onBack} />;
   }
 
   return (
     <div className="flashcard-container">
-      <div className="flashcard-header">
-        <span>Problem {currentNum} of {totalProblems}</span>
-        <span>✅ {score} correct</span>
-      </div>
+      <FlashcardHeader current={currentNum} total={totalProblems} score={score} />
 
-      <div className="flashcard">
-        <p className="problem">{problem.a} − {problem.b} = ?</p>
-      </div>
+      <Flashcard>{problem.a} − {problem.b} = ?</Flashcard>
 
       {feedback === null && (
         <form onSubmit={handleSubmitAnswer} className="answer-form">
@@ -146,39 +113,22 @@ function SubtractionFlashcard({ settings, onBack }) {
             className="answer-input"
             placeholder="Your answer"
           />
-          <button type="submit" className="submit-answer-btn">Check</button>
+          <Button variant="primary" type="submit">Check</Button>
         </form>
       )}
 
-      {feedback === "correct" && (
-        <div className="feedback correct-feedback">
-          <p>✅ Correct! {problem.a} − {problem.b} = {problem.answer}</p>
-          <button className="next-btn" onClick={handleNext}>
-            {currentNum >= totalProblems ? "See Results" : "Next →"}
-          </button>
-        </div>
-      )}
+      <FeedbackSection
+        feedback={feedback}
+        problem={problem}
+        formatProblem={(p) => `${p.a} − ${p.b}`}
+        formatAnswer={(p) => `${p.answer}`}
+        onNext={handleNext}
+        onTryAgain={handleTryAgain}
+        onPeek={handlePeek}
+        isLast={currentNum >= totalProblems}
+      />
 
-      {feedback === "wrong" && (
-        <div className="feedback wrong-feedback">
-          <p>❌ Not quite! Try again or peek at the answer.</p>
-          <div className="wrong-actions">
-            <button className="try-again-btn" onClick={handleTryAgain}>Try Again</button>
-            <button className="peek-btn" onClick={handlePeek}>Peek at Answer</button>
-          </div>
-        </div>
-      )}
-
-      {feedback === "peeked" && (
-        <div className="feedback peeked-feedback">
-          <p>👀 The answer is <strong>{problem.answer}</strong>. (Marked as incorrect)</p>
-          <button className="next-btn" onClick={handleNext}>
-            {currentNum >= totalProblems ? "See Results" : "Next →"}
-          </button>
-        </div>
-      )}
-
-      <button className="back-btn" onClick={onBack}>← Back</button>
+      <Button variant="outline" onClick={onBack}>← Back</Button>
     </div>
   );
 }

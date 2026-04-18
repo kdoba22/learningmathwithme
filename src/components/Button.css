@@ -1,0 +1,122 @@
+.btn {
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0.6rem 1.4rem;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.btn:disabled {
+  background-color: #a9a9a9 !important;
+  color: #fff !important;
+  cursor: not-allowed;
+  border-color: transparent !important;
+}
+
+/* Primary — emerald green */
+.btn-primary {
+  background-color: #50c878;
+  color: #000;
+}
+.btn-primary:hover:not(:disabled) {
+  background-color: #3daf63;
+}
+.btn-primary:active:not(:disabled) {
+  background-color: #2e8b4a;
+}
+
+/* Secondary — blue */
+.btn-secondary {
+  background-color: #3498db;
+  color: #fff;
+}
+.btn-secondary:hover:not(:disabled) {
+  background-color: #2176ae;
+}
+.btn-secondary:active:not(:disabled) {
+  background-color: #1a5f8a;
+}
+
+/* Danger — orange */
+.btn-danger {
+  background-color: #e67e22;
+  color: #fff;
+}
+.btn-danger:hover:not(:disabled) {
+  background-color: #ca6f1e;
+}
+.btn-danger:active:not(:disabled) {
+  background-color: #a85d19;
+}
+
+/* Destructive — red (scratchpad clear) */
+.btn-destructive {
+  background-color: #e74c3c;
+  color: #fff;
+}
+.btn-destructive:hover:not(:disabled) {
+  background-color: #c0392b;
+}
+.btn-destructive:active:not(:disabled) {
+  background-color: #a93226;
+}
+
+/* Outline — bordered, no fill */
+.btn-outline {
+  background: transparent;
+  color: #50c878;
+  border: 2px solid #50c878;
+  border-radius: 8px;
+}
+.btn-outline:hover:not(:disabled) {
+  background-color: #e8faf0;
+}
+.btn-outline:active:not(:disabled) {
+  background-color: #d0f0dc;
+}
+
+/* Ghost — no background, link style */
+.btn-ghost {
+  background: none;
+  color: #646cff;
+  text-decoration: underline;
+  padding: 0;
+  border-radius: 0;
+  font-weight: normal;
+}
+.btn-ghost:hover:not(:disabled) {
+  color: #535bf2;
+}
+
+/* Toggle — outlined green, fills on active */
+.btn-toggle {
+  background-color: #fff;
+  color: #50c878;
+  border: 2px solid #50c878;
+  border-radius: 0;
+  flex: 1;
+}
+.btn-toggle:hover:not(:disabled) {
+  background-color: #e8faf0;
+}
+.btn-toggle.active {
+  background-color: #50c878;
+  color: #000;
+  cursor: default;
+}
+
+/* Size modifiers */
+.btn-lg {
+  font-size: 1.3rem;
+  padding: 0.75rem 1.5rem;
+  min-width: 80px;
+  border-radius: 10px;
+}
+
+.btn-sm {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.75rem;
+}
