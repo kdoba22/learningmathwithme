@@ -1,0 +1,156 @@
+.scratchpad-table {
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+
+.scratchpad-table th {
+  font-size: 0.75rem;
+  color: #888;
+  text-align: center;
+  padding: 0 4px 4px;
+  font-weight: bold;
+}
+
+.scratchpad-cell {
+  width: 36px;
+  height: 36px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+  font-family: "Courier New", monospace;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  outline: none;
+  box-sizing: border-box;
+  padding: 0;
+  color: #000;
+}
+
+.scratchpad-cell:focus {
+  border-color: #50c878;
+}
+
+.prefilled {
+  background: #f0faf4;
+  color: #213547;
+  font-weight: bold;
+}
+
+.carry-cell {
+  background: #fff9e6;
+  font-size: 0.85rem;
+  color: #e67e22;
+  border-style: dashed;
+}
+
+.total-cell {
+  background: #f0faf4;
+  font-weight: bold;
+  border-top: 2px solid #333;
+}
+
+.carry-row td,
+.carry-row {
+  padding-bottom: 2px;
+}
+
+.operator-row td {
+  position: relative;
+}
+
+.operator-cell {
+  position: relative;
+}
+
+.operator-sign {
+  position: absolute;
+  left: -1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #213547;
+}
+
+.total-row td {
+  border-top: 2px solid #333;
+  padding-top: 4px;
+}
+
+.scratchpad-table td {
+  padding: 2px 3px;
+}
+
+.scratchpad-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.2rem 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #ddd;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.scratchpad-legend strong {
+  color: #50c878;
+}
+
+/* Multiplication specific */
+.mult-scratchpad {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  align-items: flex-end;
+}
+
+.mult-row {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.mult-row .operator-sign {
+  position: static;
+  transform: none;
+  margin-right: 4px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #213547;
+}
+
+.mult-partial-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.mult-divider {
+  width: 100%;
+  border-top: 2px solid #333;
+  margin: 4px 0;
+}
+
+.mult-row.total-row .scratchpad-cell {
+  background: #f0faf4;
+  font-weight: bold;
+}
+
+.mult-row.carry-row .scratchpad-cell {
+  background: #fff9e6;
+  font-size: 0.85rem;
+  color: #e67e22;
+  border-style: dashed;
+}
+
+@media (max-width: 768px) {
+  .scratchpad-cell {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+  }
+}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./AdditionFlashcard.css";
+import "./DivisionFlashcard.css";
 import { getMaxNumber } from "../utils/mathUtils";
 import SummaryScreen from "./SummaryScreen";
 import FeedbackSection from "./FeedbackSection";
@@ -7,6 +8,7 @@ import ProblemCountSelector from "./ProblemCountSelector";
 import FlashcardHeader from "./FlashcardHeader";
 import Flashcard from "./Flashcard";
 import Button from "./Button";
+import SubtractionScratchpad from "./SubtractionScratchpad";
 
 function generateProblem(max) {
   const a = Math.floor(Math.random() * max) + 1;
@@ -15,8 +17,8 @@ function generateProblem(max) {
 }
 
 function SubtractionFlashcard({ settings, onBack }) {
-  const { name, grade, experience } = settings;
-  const max = getMaxNumber(grade, experience);
+  const { name, experience } = settings;
+  const max = getMaxNumber(experience);
 
   const [totalProblems, setTotalProblems] = useState(null);
   const [problem, setProblem] = useState(null);
@@ -28,6 +30,8 @@ function SubtractionFlashcard({ settings, onBack }) {
   const [currentNum, setCurrentNum] = useState(1);
   const [done, setDone] = useState(false);
   const [triedOnce, setTriedOnce] = useState(false);
+  const [clearSignal, setClearSignal] = useState(0);
+  const [scratchpadTotal, setScratchpadTotal] = useState("");
   const inputRef = useRef(null);
 
   const startSession = (count) => {
@@ -41,6 +45,7 @@ function SubtractionFlashcard({ settings, onBack }) {
     setUserAnswer("");
     setTriedOnce(false);
     setPeeked(false);
+    setClearSignal((s) => s + 1);
   };
 
   useEffect(() => {
@@ -53,7 +58,8 @@ function SubtractionFlashcard({ settings, onBack }) {
 
   const handleSubmitAnswer = (e) => {
     e.preventDefault();
-    const parsed = parseInt(userAnswer);
+    const answerSource = userAnswer.trim() !== "" ? userAnswer : scratchpadTotal;
+    const parsed = parseInt(answerSource);
     if (isNaN(parsed)) return;
     if (parsed === problem.answer) {
       if (!triedOnce) setScore((s) => s + 1);
@@ -74,6 +80,7 @@ function SubtractionFlashcard({ settings, onBack }) {
       setFeedback(null);
       setTriedOnce(false);
       setPeeked(false);
+      setClearSignal((s) => s + 1);
     }
   };
 
@@ -97,37 +104,38 @@ function SubtractionFlashcard({ settings, onBack }) {
   }
 
   return (
-    <div className="flashcard-container">
-      <FlashcardHeader current={currentNum} total={totalProblems} score={score} />
-
-      <Flashcard>{problem.a} − {problem.b} = ?</Flashcard>
-
-      {feedback === null && (
-        <form onSubmit={handleSubmitAnswer} className="answer-form">
-          <input
-            ref={inputRef}
-            type="number"
-            value={userAnswer}
-            onChange={(e) => setUserAnswer(e.target.value)}
-            className="answer-input"
-            placeholder="Your answer"
-          />
-          <Button variant="primary" type="submit">Check</Button>
-        </form>
-      )}
-
-      <FeedbackSection
-        feedback={feedback}
-        problem={problem}
-        formatProblem={(p) => `${p.a} − ${p.b}`}
-        formatAnswer={(p) => `${p.answer}`}
-        onNext={handleNext}
-        onTryAgain={handleTryAgain}
-        onPeek={handlePeek}
-        isLast={currentNum >= totalProblems}
-      />
-
-      <Button variant="outline" onClick={onBack}>← Back</Button>
+    <div className="division-page">
+      <div className="flashcard-container division-left">
+        <FlashcardHeader current={currentNum} total={totalProblems} score={score} />
+        <Flashcard>{problem.a} − {problem.b} = ?</Flashcard>
+        {feedback === null && (
+          <form onSubmit={handleSubmitAnswer} className="answer-form">
+            <input
+              ref={inputRef}
+              type="number"
+              value={userAnswer}
+              onChange={(e) => setUserAnswer(e.target.value)}
+              className="answer-input"
+              placeholder="Your answer"
+            />
+            <Button variant="primary" type="submit">Check</Button>
+          </form>
+        )}
+        <FeedbackSection
+          feedback={feedback}
+          problem={problem}
+          formatProblem={(p) => `${p.a} − ${p.b}`}
+          formatAnswer={(p) => `${p.answer}`}
+          onNext={handleNext}
+          onTryAgain={handleTryAgain}
+          onPeek={handlePeek}
+          isLast={currentNum >= totalProblems}
+        />
+        <Button variant="outline" onClick={onBack}>← Back</Button>
+      </div>
+      <div className="division-right">
+        <SubtractionScratchpad a={problem.a} b={problem.b} clearSignal={clearSignal} onTotalChange={setScratchpadTotal} />
+      </div>
     </div>
   );
 }

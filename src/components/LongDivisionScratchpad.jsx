@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./LongDivisionScratchpad.css";
 import Button from "./Button";
 
-function LongDivisionScratchpad({ divisor, dividend, clearSignal }) {
+function LongDivisionScratchpad({ divisor, dividend, clearSignal, onQuotientChange, onRemainderChange }) {
   const [quotientWork, setQuotientWork] = useState("");
   const [steps, setSteps] = useState([{ multiply: "", subtract: "", bringDown: "" }]);
   const [remainderWork, setRemainderWork] = useState("");
@@ -11,6 +11,8 @@ function LongDivisionScratchpad({ divisor, dividend, clearSignal }) {
     setQuotientWork("");
     setSteps([{ multiply: "", subtract: "", bringDown: "" }]);
     setRemainderWork("");
+    if (onQuotientChange) onQuotientChange("");
+    if (onRemainderChange) onRemainderChange("");
   }, [clearSignal]);
 
   const addStep = () => {
@@ -31,6 +33,8 @@ function LongDivisionScratchpad({ divisor, dividend, clearSignal }) {
     setQuotientWork("");
     setSteps([{ multiply: "", subtract: "", bringDown: "" }]);
     setRemainderWork("");
+    if (onQuotientChange) onQuotientChange("");
+    if (onRemainderChange) onRemainderChange("");
   };
 
   return (
@@ -50,7 +54,10 @@ function LongDivisionScratchpad({ divisor, dividend, clearSignal }) {
               type="text"
               className="ld-input ld-quotient-input"
               value={quotientWork}
-              onChange={(e) => setQuotientWork(e.target.value)}
+              onChange={(e) => {
+                setQuotientWork(e.target.value);
+                if (onQuotientChange) onQuotientChange(e.target.value.trim());
+              }}
               placeholder="quotient"
             />
           </div>
@@ -118,7 +125,10 @@ function LongDivisionScratchpad({ divisor, dividend, clearSignal }) {
             type="text"
             className="ld-input ld-step-input"
             value={remainderWork}
-            onChange={(e) => setRemainderWork(e.target.value)}
+            onChange={(e) => {
+              setRemainderWork(e.target.value);
+              if (onRemainderChange) onRemainderChange(e.target.value.trim());
+            }}
             placeholder="remainder"
           />
         </div>

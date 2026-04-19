@@ -8,6 +8,7 @@ import FlashcardHeader from "./FlashcardHeader";
 import Flashcard from "./Flashcard";
 import WelcomeBanner from "./WelcomeBanner";
 import Button from "./Button";
+import MultiplicationScratchpad from "./MultiplicationScratchpad";
 
 function generateRandomProblem(max) {
   const a = Math.floor(Math.random() * max) + 1;
@@ -16,8 +17,8 @@ function generateRandomProblem(max) {
 }
 
 function MultiplicationFlashcard({ settings, onBack }) {
-  const { name, grade, experience } = settings;
-  const max = getMaxNumber(grade, experience);
+  const { name, experience } = settings;
+  const max = getMaxNumber(experience);
 
   const [activeType, setActiveType] = useState("times-table");
   const [screen, setScreen] = useState("select");
@@ -33,6 +34,8 @@ function MultiplicationFlashcard({ settings, onBack }) {
   const [wrongCount, setWrongCount] = useState(0);
   const [triedOnce, setTriedOnce] = useState(false);
   const [done, setDone] = useState(false);
+  const [clearSignal, setClearSignal] = useState(0);
+  const [scratchpadTotal, setScratchpadTotal] = useState("");
   const inputRef = useRef(null);
 
   const applyReset = () => {
@@ -86,7 +89,8 @@ function MultiplicationFlashcard({ settings, onBack }) {
 
   const handleSubmitAnswer = (e) => {
     e.preventDefault();
-    const parsed = parseInt(userAnswer);
+    const answerSource = userAnswer.trim() !== "" ? userAnswer : scratchpadTotal;
+    const parsed = parseInt(answerSource);
     if (isNaN(parsed)) return;
     if (parsed === problem.answer) {
       if (!triedOnce) setScore((s) => s + 1);
@@ -109,6 +113,7 @@ function MultiplicationFlashcard({ settings, onBack }) {
         setFeedback(null);
         setTriedOnce(false);
         setPeeked(false);
+        setClearSignal((s) => s + 1);
       }
     } else {
       if (currentNum >= totalProblems) {
@@ -120,6 +125,7 @@ function MultiplicationFlashcard({ settings, onBack }) {
         setFeedback(null);
         setTriedOnce(false);
         setPeeked(false);
+        setClearSignal((s) => s + 1);
       }
     }
   };
@@ -217,43 +223,44 @@ function MultiplicationFlashcard({ settings, onBack }) {
   }
 
   return (
-    <div className="flashcard-container multiplication-container">
-      <ModeToggle />
-      <FlashcardHeader
-        current={displayNum}
-        total={total}
-        score={score}
-        label={screen === "times-table" ? `${selectedTable}'s Table — ${displayNum} of ${total}` : null}
-      />
-
-      <Flashcard>{problem.a} × {problem.b} = ?</Flashcard>
-
-      {feedback === null && (
-        <form onSubmit={handleSubmitAnswer} className="answer-form">
-          <input
-            ref={inputRef}
-            type="number"
-            value={userAnswer}
-            onChange={(e) => setUserAnswer(e.target.value)}
-            className="answer-input"
-            placeholder="Your answer"
-          />
-          <Button variant="primary" type="submit">Check</Button>
-        </form>
-      )}
-
-      <FeedbackSection
-        feedback={feedback}
-        problem={problem}
-        formatProblem={(p) => `${p.a} × ${p.b}`}
-        formatAnswer={(p) => `${p.answer}`}
-        onNext={handleNext}
-        onTryAgain={handleTryAgain}
-        onPeek={handlePeek}
-        isLast={displayNum >= total}
-      />
-
-      <Button variant="outline" onClick={onBack}>← Back</Button>
+    <div className="division-page multiplication-container">
+      <div className="flashcard-container division-left">
+        <ModeToggle />
+        <FlashcardHeader
+          current={displayNum}
+          total={total}
+          score={score}
+          label={screen === "times-table" ? `${selectedTable}'s Table — ${displayNum} of ${total}` : null}
+        />
+        <Flashcard>{problem.a} × {problem.b} = ?</Flashcard>
+        {feedback === null && (
+          <form onSubmit={handleSubmitAnswer} className="answer-form">
+            <input
+              ref={inputRef}
+              type="number"
+              value={userAnswer}
+              onChange={(e) => setUserAnswer(e.target.value)}
+              className="answer-input"
+              placeholder="Your answer"
+            />
+            <Button variant="primary" type="submit">Check</Button>
+          </form>
+        )}
+        <FeedbackSection
+          feedback={feedback}
+          problem={problem}
+          formatProblem={(p) => `${p.a} × ${p.b}`}
+          formatAnswer={(p) => `${p.answer}`}
+          onNext={handleNext}
+          onTryAgain={handleTryAgain}
+          onPeek={handlePeek}
+          isLast={displayNum >= total}
+        />
+        <Button variant="outline" onClick={onBack}>← Back</Button>
+      </div>
+      <div className="division-right">
+        <MultiplicationScratchpad a={problem.a} b={problem.b} clearSignal={clearSignal} onTotalChange={setScratchpadTotal} />
+      </div>
     </div>
   );
 }

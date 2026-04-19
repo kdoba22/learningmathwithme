@@ -8,14 +8,12 @@ import FeedbackSection from "./FeedbackSection";
 import ProblemCountSelector from "./ProblemCountSelector";
 import FlashcardHeader from "./FlashcardHeader";
 import Flashcard from "./Flashcard";
-import WelcomeBanner from "./WelcomeBanner";
 import Button from "./Button";
 
 const noRemainderLevels = ["Beginner", "Intermediate"];
 
-function generateProblem(max, experience, grade) {
-  const gradeNum = grade === "KG" ? 0 : parseInt(grade);
-  const allowRemainder = gradeNum >= 4 && !noRemainderLevels.includes(experience);
+function generateProblem(max, experience) {
+  const allowRemainder = !noRemainderLevels.includes(experience);
   const b = Math.floor(Math.random() * Math.min(max, 20)) + 2;
 
   if (allowRemainder) {
@@ -32,10 +30,9 @@ function generateProblem(max, experience, grade) {
 }
 
 function DivisionFlashcard({ settings, onBack }) {
-  const { name, grade, experience } = settings;
-  const max = getMaxNumber(grade, experience);
-  const gradeNum = grade === "KG" ? 0 : parseInt(grade);
-  const allowRemainder = gradeNum >= 4 && !noRemainderLevels.includes(experience);
+  const { name, experience } = settings;
+  const max = getMaxNumber(experience);
+  const allowRemainder = !noRemainderLevels.includes(experience);
 
   const [totalProblems, setTotalProblems] = useState(null);
   const [problem, setProblem] = useState(null);
@@ -49,11 +46,13 @@ function DivisionFlashcard({ settings, onBack }) {
   const [done, setDone] = useState(false);
   const [triedOnce, setTriedOnce] = useState(false);
   const [clearSignal, setClearSignal] = useState(0);
+  const [scratchpadQuotient, setScratchpadQuotient] = useState("");
+  const [scratchpadRemainder, setScratchpadRemainder] = useState("");
   const quotientRef = useRef(null);
 
   const startSession = (count) => {
     setTotalProblems(count);
-    setProblem(generateProblem(max, experience, grade));
+    setProblem(generateProblem(max, experience));
     setCurrentNum(1);
     setScore(0);
     setWrongCount(0);
@@ -76,8 +75,10 @@ function DivisionFlashcard({ settings, onBack }) {
 
   const handleSubmitAnswer = (e) => {
     e.preventDefault();
-    const parsedQ = parseInt(quotientAnswer);
-    const parsedR = allowRemainder && problem.hasRemainder ? parseInt(remainderAnswer) : 0;
+    const qSource = quotientAnswer.trim() !== "" ? quotientAnswer : scratchpadQuotient;
+    const rSource = remainderAnswer.trim() !== "" ? remainderAnswer : scratchpadRemainder;
+    const parsedQ = parseInt(qSource);
+    const parsedR = allowRemainder && problem.hasRemainder ? parseInt(rSource) : 0;
     if (isNaN(parsedQ)) return;
     if (allowRemainder && problem.hasRemainder && isNaN(parsedR)) return;
 
@@ -99,7 +100,7 @@ function DivisionFlashcard({ settings, onBack }) {
       setDone(true);
     } else {
       setCurrentNum((n) => n + 1);
-      setProblem(generateProblem(max, experience, grade));
+      setProblem(generateProblem(max, experience));
       setQuotientAnswer("");
       setRemainderAnswer("");
       setFeedback(null);
@@ -191,6 +192,8 @@ function DivisionFlashcard({ settings, onBack }) {
           divisor={problem.b}
           dividend={problem.a}
           clearSignal={clearSignal}
+          onQuotientChange={setScratchpadQuotient}
+          onRemainderChange={setScratchpadRemainder}
         />
       </div>
     </div>

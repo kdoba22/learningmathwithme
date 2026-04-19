@@ -4,7 +4,6 @@ import Button from "./Button";
 
 function UserForm({ onStart, initialSettings }) {
   const [name, setName] = useState(initialSettings?.name || "");
-  const [grade, setGrade] = useState(initialSettings?.grade || "KG");
   const [experience, setExperience] = useState(initialSettings?.experience || "Beginner");
   const [operation, setOperation] = useState(initialSettings?.operation || "Addition");
   const [error, setError] = useState("");
@@ -22,10 +21,6 @@ function UserForm({ onStart, initialSettings }) {
     setName(input);
   };
 
-  const handleGradeChange = (e) => {
-    setGrade(e.target.value);
-  };
-
   const handleExperienceChange = (e) => {
     setExperience(e.target.value);
   };
@@ -37,7 +32,7 @@ function UserForm({ onStart, initialSettings }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!error) {
-      onStart({ name, grade, experience, operation });
+      onStart({ name, experience, operation });
     }
   };
 
@@ -59,23 +54,6 @@ function UserForm({ onStart, initialSettings }) {
         />
       </div>
       {error && <p className="error-message">{error}</p>}
-      <div>
-        <label htmlFor="grade">Grade: </label>
-        <select
-          id="grade"
-          value={grade}
-          onChange={handleGradeChange}
-          className="grade-select"
-        >
-          <option value="KG">KG</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-        </select>
-      </div>
       <div>
         <label htmlFor="experience">Experience Level: </label>
         <select
