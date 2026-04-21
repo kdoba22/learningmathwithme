@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "./AdditionFlashcard.css";
 import "./DivisionFlashcard.css";
 import LongDivisionScratchpad from "./LongDivisionScratchpad";
+import ScratchpadToggle from "./ScratchpadToggle";
 import { getMaxNumber } from "../utils/mathUtils";
 import SummaryScreen from "./SummaryScreen";
 import FeedbackSection from "./FeedbackSection";
@@ -48,6 +49,7 @@ function DivisionFlashcard({ settings, onBack }) {
   const [clearSignal, setClearSignal] = useState(0);
   const [scratchpadQuotient, setScratchpadQuotient] = useState("");
   const [scratchpadRemainder, setScratchpadRemainder] = useState("");
+  const [hideScratchpad, setHideScratchpad] = useState(false);
   const quotientRef = useRef(null);
 
   const startSession = (count) => {
@@ -188,13 +190,16 @@ function DivisionFlashcard({ settings, onBack }) {
       </div>
 
       <div className="division-right">
-        <LongDivisionScratchpad
-          divisor={problem.b}
-          dividend={problem.a}
-          clearSignal={clearSignal}
-          onQuotientChange={setScratchpadQuotient}
-          onRemainderChange={setScratchpadRemainder}
-        />
+        <ScratchpadToggle hidden={hideScratchpad} onChange={setHideScratchpad} />
+        {!hideScratchpad && (
+          <LongDivisionScratchpad
+            divisor={problem.b}
+            dividend={problem.a}
+            clearSignal={clearSignal}
+            onQuotientChange={setScratchpadQuotient}
+            onRemainderChange={setScratchpadRemainder}
+          />
+        )}
       </div>
     </div>
   );

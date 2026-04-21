@@ -9,6 +9,7 @@ import FlashcardHeader from "./FlashcardHeader";
 import Flashcard from "./Flashcard";
 import Button from "./Button";
 import AdditionScratchpad from "./AdditionScratchpad";
+import ScratchpadToggle from "./ScratchpadToggle";
 
 function generateProblem(max, allowZero = false) {
   const min = allowZero ? 0 : 1;
@@ -36,6 +37,7 @@ function AdditionFlashcard({ settings, onBack }) {
   const allowZero = experience === "Beginner";
   const [clearSignal, setClearSignal] = useState(0);
   const [scratchpadTotal, setScratchpadTotal] = useState("");
+  const [hideScratchpad, setHideScratchpad] = useState(false);
 
   const startSession = (count) => {
     setTotalProblems(count);
@@ -137,7 +139,10 @@ function AdditionFlashcard({ settings, onBack }) {
         <Button variant="outline" onClick={onBack}>← Back</Button>
       </div>
       <div className="division-right">
-        <AdditionScratchpad a={problem.a} b={problem.b} clearSignal={clearSignal} onTotalChange={setScratchpadTotal} />
+        <ScratchpadToggle hidden={hideScratchpad} onChange={setHideScratchpad} />
+        {!hideScratchpad && (
+          <AdditionScratchpad a={problem.a} b={problem.b} clearSignal={clearSignal} onTotalChange={setScratchpadTotal} />
+        )}
       </div>
     </div>
   );

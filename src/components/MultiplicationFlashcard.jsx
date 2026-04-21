@@ -9,6 +9,7 @@ import Flashcard from "./Flashcard";
 import WelcomeBanner from "./WelcomeBanner";
 import Button from "./Button";
 import MultiplicationScratchpad from "./MultiplicationScratchpad";
+import ScratchpadToggle from "./ScratchpadToggle";
 
 function generateRandomProblem(max) {
   const a = Math.floor(Math.random() * max) + 1;
@@ -36,6 +37,7 @@ function MultiplicationFlashcard({ settings, onBack }) {
   const [done, setDone] = useState(false);
   const [clearSignal, setClearSignal] = useState(0);
   const [scratchpadTotal, setScratchpadTotal] = useState("");
+  const [hideScratchpad, setHideScratchpad] = useState(false);
   const inputRef = useRef(null);
 
   const applyReset = () => {
@@ -259,7 +261,10 @@ function MultiplicationFlashcard({ settings, onBack }) {
         <Button variant="outline" onClick={onBack}>← Back</Button>
       </div>
       <div className="division-right">
-        <MultiplicationScratchpad a={problem.a} b={problem.b} clearSignal={clearSignal} onTotalChange={setScratchpadTotal} />
+        <ScratchpadToggle hidden={hideScratchpad} onChange={setHideScratchpad} />
+        {!hideScratchpad && (
+          <MultiplicationScratchpad a={problem.a} b={problem.b} clearSignal={clearSignal} onTotalChange={setScratchpadTotal} />
+        )}
       </div>
     </div>
   );
