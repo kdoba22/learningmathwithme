@@ -62,6 +62,9 @@ function AdditionScratchpad({ a, b, clearSignal, onTotalChange }) {
                   value={v} onChange={(e) => updateCell(setCarry, carry, i, e.target.value)} />
               </td>
             ))}
+            <td>
+              <Button variant="secondary" className="btn-sm" onClick={() => setCarry(["", "", "", ""])}>Clear Row</Button>
+            </td>
           </tr>
           <tr>
             {topNum.map((v, i) => (

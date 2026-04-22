@@ -62,6 +62,9 @@ function SubtractionScratchpad({ a, b, clearSignal, onTotalChange }) {
                   value={v} onChange={(e) => updateCell(setBorrow, borrow, i, e.target.value)} />
               </td>
             ))}
+            <td>
+              <Button variant="secondary" className="btn-sm" onClick={() => setBorrow(["", "", "", ""])}>Clear Row</Button>
+            </td>
           </tr>
           <tr>
             {topNum.map((v, i) => (

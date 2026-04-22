@@ -6,11 +6,10 @@ function toDigits(num, len = 4) {
   return String(num).padStart(len, " ").split("");
 }
 
-const emptyPartial = (len = 4) => ({ carry: Array(len + 1).fill(""), product: Array(len + 2).fill("") });
+const emptyPartial = (len = 4) => ({ product: Array(len + 2).fill("") });
 
 function MultiplicationScratchpad({ a, b, clearSignal, onTotalChange }) {
   const aLen = Math.max(String(a).length, String(b).length);
-  const bLen = String(b).length;
   const [topCarry, setTopCarry] = useState(Array(aLen + 1).fill(""));
   const [topNum, setTopNum] = useState(toDigits(a, aLen));
   const [bottomNum, setBottomNum] = useState(toDigits(b, aLen));
@@ -51,13 +50,13 @@ function MultiplicationScratchpad({ a, b, clearSignal, onTotalChange }) {
     if (onTotalChange) onTotalChange(updated.join("").trim());
   };
 
-  const updatePartial = (rowIndex, field, colIndex, value) => {
+  const updatePartial = (rowIndex, colIndex, value) => {
     setPartials((prev) =>
       prev.map((row, i) => {
         if (i !== rowIndex) return row;
-        const updated = [...row[field]];
+        const updated = [...row.product];
         updated[colIndex] = value;
-        return { ...row, [field]: updated };
+        return { ...row, product: updated };
       })
     );
   };
@@ -71,8 +70,9 @@ function MultiplicationScratchpad({ a, b, clearSignal, onTotalChange }) {
 
       <div className="mult-scratchpad">
 
-        {/* Carry row above top number */}
+        {/* Carry row with Clear Row button on the left */}
         <div className="mult-row carry-row">
+          <Button variant="secondary" className="btn-sm carry-clear-btn" onClick={() => setTopCarry(Array(aLen + 1).fill(""))}>Clear Row</Button>
           {topCarry.map((v, i) => (
             <input key={i} type="text" maxLength={1} className="scratchpad-cell carry-cell"
               value={v} onChange={(e) => updateCell(setTopCarry, topCarry, i, e.target.value)} />
@@ -101,16 +101,10 @@ function MultiplicationScratchpad({ a, b, clearSignal, onTotalChange }) {
         {/* Partial product rows */}
         {partials.map((row, ri) => (
           <div key={ri} className="mult-partial-group">
-            <div className="mult-row carry-row">
-              {row.carry.map((v, i) => (
-                <input key={i} type="text" maxLength={1} className="scratchpad-cell carry-cell"
-                  value={v} onChange={(e) => updatePartial(ri, "carry", i, e.target.value)} />
-              ))}
-            </div>
             <div className="mult-row">
               {row.product.map((v, i) => (
                 <input key={i} type="text" maxLength={1} className="scratchpad-cell"
-                  value={v} onChange={(e) => updatePartial(ri, "product", i, e.target.value)} />
+                  value={v} onChange={(e) => updatePartial(ri, i, e.target.value)} />
               ))}
             </div>
           </div>
