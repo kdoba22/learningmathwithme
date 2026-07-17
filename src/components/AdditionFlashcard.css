@@ -50,6 +50,7 @@
   width: 160px;
   text-align: center;
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .answer-input::-webkit-outer-spin-button,

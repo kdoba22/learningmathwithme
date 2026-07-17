@@ -6,16 +6,20 @@ import SummaryScreen from "./SummaryScreen";
 import FeedbackSection from "./FeedbackSection";
 import ProblemCountSelector from "./ProblemCountSelector";
 import FlashcardHeader from "./FlashcardHeader";
-import Flashcard from "./Flashcard";
+import StackedProblem from "./StackedProblem";
 import Button from "./Button";
 import SubtractionScratchpad from "./SubtractionScratchpad";
 import ScratchpadToggle from "./ScratchpadToggle";
 
+// ─── Problem generator ────────────────────────────────────────────────────────
+
 function generateProblem(max) {
   const a = Math.floor(Math.random() * max) + 1;
-  const b = Math.floor(Math.random() * a) + 1;
+  const b = Math.floor(Math.random() * a) + 1; // b <= a → result always >= 0
   return { a, b, answer: a - b };
 }
+
+// ─── Main component ───────────────────────────────────────────────────────────
 
 function SubtractionFlashcard({ settings, onBack }) {
   const { name, experience } = settings;
@@ -63,6 +67,7 @@ function SubtractionFlashcard({ settings, onBack }) {
     const answerSource = userAnswer.trim() !== "" ? userAnswer : scratchpadTotal;
     const parsed = parseInt(answerSource);
     if (isNaN(parsed)) return;
+
     if (parsed === problem.answer) {
       if (!triedOnce) setScore((s) => s + 1);
       setFeedback("correct");
@@ -97,48 +102,80 @@ function SubtractionFlashcard({ settings, onBack }) {
     setFeedback(null);
   };
 
+  // ── Problem count selector screen ──
   if (!totalProblems) {
-    return <ProblemCountSelector name={name} operation="subtraction" onSelect={startSession} onBack={onBack} />;
+    return (
+      <ProblemCountSelector
+        name={name}
+        operation="subtraction"
+        onSelect={startSession}
+        onBack={onBack}
+      />
+    );
   }
 
+  // ── Summary screen ──
   if (done) {
-    return <SummaryScreen name={name} score={score} total={totalProblems} onPlayAgain={() => startSession(totalProblems)} onBack={onBack} />;
+    return (
+      <SummaryScreen
+        name={name}
+        score={score}
+        total={totalProblems}
+        onPlayAgain={() => startSession(totalProblems)}
+        onBack={onBack}
+      />
+    );
   }
 
+  // ── Active session ──
   return (
     <div className="division-page">
       <div className="flashcard-container division-left">
         <FlashcardHeader current={currentNum} total={totalProblems} score={score} />
-        <Flashcard>{problem.a} − {problem.b} = ?</Flashcard>
-        {feedback === null && (
-          <form onSubmit={handleSubmitAnswer} className="answer-form">
-            <input
-              ref={inputRef}
-              type="number"
-              value={userAnswer}
-              onChange={(e) => setUserAnswer(e.target.value)}
-              className="answer-input"
-              placeholder="Your answer"
+        <StackedProblem
+          topNumber={String(problem.a)}
+          bottomNumber={String(problem.b)}
+          operator="−"
+          answerInput={
+            feedback === null ? (
+              <form onSubmit={handleSubmitAnswer} style={{ width: "100%" }}>
+                <input
+                  ref={inputRef}
+                  type="number"
+                  step="1"
+                  value={userAnswer}
+                  onChange={(e) => setUserAnswer(e.target.value)}
+                  placeholder="?"
+                  aria-label="Your answer"
+                />
+                <Button variant="primary" type="submit">Check</Button>
+              </form>
+            ) : null
+          }
+          feedback={
+            <FeedbackSection
+              feedback={feedback}
+              problem={problem}
+              formatProblem={(p) => `${p.a} − ${p.b}`}
+              formatAnswer={(p) => String(p.answer)}
+              onNext={handleNext}
+              onTryAgain={handleTryAgain}
+              onPeek={handlePeek}
+              isLast={currentNum >= totalProblems}
             />
-            <Button variant="primary" type="submit">Check</Button>
-          </form>
-        )}
-        <FeedbackSection
-          feedback={feedback}
-          problem={problem}
-          formatProblem={(p) => `${p.a} − ${p.b}`}
-          formatAnswer={(p) => `${p.answer}`}
-          onNext={handleNext}
-          onTryAgain={handleTryAgain}
-          onPeek={handlePeek}
-          isLast={currentNum >= totalProblems}
+          }
         />
         <Button variant="outline" onClick={onBack}>← Back</Button>
       </div>
       <div className="division-right">
         <ScratchpadToggle hidden={hideScratchpad} onChange={setHideScratchpad} />
         {!hideScratchpad && (
-          <SubtractionScratchpad a={problem.a} b={problem.b} clearSignal={clearSignal} onTotalChange={setScratchpadTotal} />
+          <SubtractionScratchpad
+            a={problem.a}
+            b={problem.b}
+            clearSignal={clearSignal}
+            onTotalChange={setScratchpadTotal}
+          />
         )}
       </div>
     </div>

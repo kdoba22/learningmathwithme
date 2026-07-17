@@ -2,29 +2,34 @@ import React, { useState, useEffect } from "react";
 import "./Scratchpad.css";
 import Button from "./Button";
 
-function toDigits(num, len = 4) {
-  return String(num).padStart(len, " ").split("");
+// Pad a number string to 4 characters, left-padded with spaces
+function toDigits(num) {
+  return String(Math.round(num)).padStart(4, " ").split("");
 }
 
+const COLS = ["Th", "H", "T", "O"];
+
 function SubtractionScratchpad({ a, b, clearSignal, onTotalChange }) {
-  const [borrow, setBorrow] = useState(["", "", "", ""]);
-  const [topNum, setTopNum] = useState(toDigits(a));
-  const [bottomNum, setBottomNum] = useState(toDigits(b));
-  const [result, setResult] = useState(["", "", "", ""]);
+  const emptyRow = () => Array(4).fill("");
+
+  const [borrow, setBorrow] = useState(emptyRow);
+  const [topNum, setTopNum] = useState(() => toDigits(a));
+  const [bottomNum, setBottomNum] = useState(() => toDigits(b));
+  const [result, setResult] = useState(emptyRow);
 
   useEffect(() => {
-    setBorrow(["", "", "", ""]);
+    setBorrow(emptyRow());
     setTopNum(toDigits(a));
     setBottomNum(toDigits(b));
-    setResult(["", "", "", ""]);
+    setResult(emptyRow());
     if (onTotalChange) onTotalChange("");
   }, [clearSignal, a, b]);
 
   const handleClear = () => {
-    setBorrow(["", "", "", ""]);
+    setBorrow(emptyRow());
     setTopNum(toDigits(a));
     setBottomNum(toDigits(b));
-    setResult(["", "", "", ""]);
+    setResult(emptyRow());
     if (onTotalChange) onTotalChange("");
   };
 
@@ -41,8 +46,6 @@ function SubtractionScratchpad({ a, b, clearSignal, onTotalChange }) {
     if (onTotalChange) onTotalChange(updated.join("").trim());
   };
 
-  const cols = ["Th", "H", "T", "O"];
-
   return (
     <div className="scratchpad">
       <div className="scratchpad-title">
@@ -52,9 +55,14 @@ function SubtractionScratchpad({ a, b, clearSignal, onTotalChange }) {
 
       <table className="scratchpad-table">
         <thead>
-          <tr>{cols.map((c) => <th key={c}>{c}</th>)}</tr>
+          <tr>
+            {COLS.map((c, i) => (
+              <th key={i}>{c}</th>
+            ))}
+          </tr>
         </thead>
         <tbody>
+          {/* Borrow row */}
           <tr className="carry-row">
             {borrow.map((v, i) => (
               <td key={i}>
@@ -63,9 +71,12 @@ function SubtractionScratchpad({ a, b, clearSignal, onTotalChange }) {
               </td>
             ))}
             <td>
-              <Button variant="secondary" className="btn-sm" onClick={() => setBorrow(["", "", "", ""])}>Clear Row</Button>
+              <Button variant="secondary" className="btn-sm"
+                onClick={() => setBorrow(emptyRow())}>Clear Row</Button>
             </td>
           </tr>
+
+          {/* Top number (a) */}
           <tr>
             {topNum.map((v, i) => (
               <td key={i}>
@@ -74,6 +85,8 @@ function SubtractionScratchpad({ a, b, clearSignal, onTotalChange }) {
               </td>
             ))}
           </tr>
+
+          {/* Bottom number (b) with − sign */}
           <tr className="operator-row">
             {bottomNum.map((v, i) => (
               <td key={i} className={i === 0 ? "operator-cell" : ""}>
@@ -83,6 +96,8 @@ function SubtractionScratchpad({ a, b, clearSignal, onTotalChange }) {
               </td>
             ))}
           </tr>
+
+          {/* Result (answer) row */}
           <tr className="total-row">
             {result.map((v, i) => (
               <td key={i}>

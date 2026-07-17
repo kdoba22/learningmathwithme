@@ -19,12 +19,9 @@
   border: 2px solid #50c878;
   border-radius: 8px;
   overflow: hidden;
-  position: fixed;
-  top: 8.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 999;
   background: #fff;
+  width: 100%;
+  max-width: 400px;
 }
 
 .mode-toggle-btn {
@@ -51,28 +48,79 @@
 }
 
 .multiplication-welcome {
-  position: fixed;
-  top: 13rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 998;
-  background: #fff;
   font-size: 2rem;
   font-weight: bold;
-  white-space: nowrap;
   margin: 0;
 }
 
 .multiplication-container {
-  margin-top: 17rem;
+  margin-top: 8rem;
+}
+
+/* Celebratory pop when the answer is correct */
+.multiplication-correct-pop {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  animation: multiplication-correct-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.multiplication-correct-pop::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: 22px;
+  border: 3px solid rgba(80, 200, 120, 0.65);
+  pointer-events: none;
+  z-index: 0;
+  animation: multiplication-pop-ring 0.75s ease-out forwards;
+}
+
+.multiplication-correct-pop .flashcard {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes multiplication-correct-pop {
+  0% {
+    transform: scale(0.88);
+    filter: brightness(1);
+  }
+  45% {
+    transform: scale(1.07);
+    filter: brightness(1.08);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes multiplication-pop-ring {
+  0% {
+    transform: scale(0.75);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .multiplication-correct-pop {
+    animation: none;
+  }
+
+  .multiplication-correct-pop::after {
+    animation: none;
+    opacity: 0;
+  }
 }
 
 @media (max-width: 480px) {
   .times-table-grid {
     grid-template-columns: repeat(3, 1fr);
-  }
-
-  .mode-toggle {
-    top: 5rem;
   }
 }

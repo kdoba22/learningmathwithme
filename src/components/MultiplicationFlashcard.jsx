@@ -11,11 +11,36 @@ import Button from "./Button";
 import MultiplicationScratchpad from "./MultiplicationScratchpad";
 import ScratchpadToggle from "./ScratchpadToggle";
 
+// ─── Problem generator ────────────────────────────────────────────────────────
+
 function generateRandomProblem(max) {
   const a = Math.floor(Math.random() * max) + 1;
   const b = Math.floor(Math.random() * max) + 1;
   return { a, b, answer: a * b };
 }
+
+// ─── Times Tables / Random toggle ─────────────────────────────────────────────
+
+function TypeToggle({ activeType, onSwitch }) {
+  return (
+    <div className="mode-toggle">
+      <button
+        className={`btn btn-toggle ${activeType === "times-table" ? "active" : ""}`}
+        onClick={() => activeType !== "times-table" && onSwitch("times-table")}
+      >
+        Times Tables
+      </button>
+      <button
+        className={`btn btn-toggle ${activeType === "random" ? "active" : ""}`}
+        onClick={() => activeType !== "random" && onSwitch("random")}
+      >
+        Random
+      </button>
+    </div>
+  );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
 
 function MultiplicationFlashcard({ settings, onBack }) {
   const { name, experience } = settings;
@@ -30,22 +55,19 @@ function MultiplicationFlashcard({ settings, onBack }) {
   const [currentNum, setCurrentNum] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState(null);
-  const [peeked, setPeeked] = useState(false);
   const [score, setScore] = useState(0);
-  const [wrongCount, setWrongCount] = useState(0);
   const [triedOnce, setTriedOnce] = useState(false);
   const [done, setDone] = useState(false);
   const [clearSignal, setClearSignal] = useState(0);
   const [scratchpadTotal, setScratchpadTotal] = useState("");
   const [hideScratchpad, setHideScratchpad] = useState(false);
+  const [celebrateTick, setCelebrateTick] = useState(0);
   const inputRef = useRef(null);
 
   const applyReset = () => {
     setScore(0);
-    setWrongCount(0);
     setCurrentNum(0);
     setTriedOnce(false);
-    setPeeked(false);
     setDone(false);
     setFeedback(null);
     setUserAnswer("");
@@ -94,8 +116,10 @@ function MultiplicationFlashcard({ settings, onBack }) {
     const answerSource = userAnswer.trim() !== "" ? userAnswer : scratchpadTotal;
     const parsed = parseInt(answerSource);
     if (isNaN(parsed)) return;
+
     if (parsed === problem.answer) {
       if (!triedOnce) setScore((s) => s + 1);
+      setCelebrateTick((t) => t + 1);
       setFeedback("correct");
     } else {
       setTriedOnce(true);
@@ -114,7 +138,6 @@ function MultiplicationFlashcard({ settings, onBack }) {
         setUserAnswer("");
         setFeedback(null);
         setTriedOnce(false);
-        setPeeked(false);
         setClearSignal((s) => s + 1);
       }
     } else {
@@ -126,15 +149,12 @@ function MultiplicationFlashcard({ settings, onBack }) {
         setUserAnswer("");
         setFeedback(null);
         setTriedOnce(false);
-        setPeeked(false);
         setClearSignal((s) => s + 1);
       }
     }
   };
 
   const handlePeek = () => {
-    setPeeked(true);
-    setWrongCount((w) => w + 1);
     setFeedback("peeked");
   };
 
@@ -145,41 +165,36 @@ function MultiplicationFlashcard({ settings, onBack }) {
 
   const total = screen === "times-table" ? problems.length : totalProblems;
   const displayNum = screen === "times-table" ? currentNum + 1 : currentNum;
-  const title = screen === "times-table" ? `${selectedTable}'s Times Table` : "Random Multiplication";
+  const title =
+    screen === "times-table"
+      ? `${selectedTable}'s Times Table`
+      : "Random Multiplication";
 
-  const ModeToggle = () => (
-    <div className="mode-toggle">
-      <button
-        className={`btn btn-toggle ${activeType === "times-table" ? "active" : ""}`}
-        onClick={() => activeType !== "times-table" && switchType("times-table")}
-      >
-        Times Tables
-      </button>
-      <button
-        className={`btn btn-toggle ${activeType === "random" ? "active" : ""}`}
-        onClick={() => activeType !== "random" && switchType("random")}
-      >
-        Random
-      </button>
-    </div>
-  );
-
+  // ── Summary screen ──
   if (done) {
     return (
       <div className="multiplication-container">
-        <ModeToggle />
+        <TypeToggle activeType={activeType} onSwitch={switchType} />
         <SummaryScreen
           name={name}
           score={score}
           total={total}
           title={title}
-          onPlayAgain={() => screen === "times-table" ? startTimesTable(selectedTable) : startRandom(totalProblems)}
+          onPlayAgain={() =>
+            screen === "times-table"
+              ? startTimesTable(selectedTable)
+              : startRandom(totalProblems)
+          }
           onBack={onBack}
           extraActions={
-            <Button variant="primary" className="btn-lg" onClick={() => {
-              applyReset();
-              setScreen(activeType === "times-table" ? "select" : "random-setup");
-            }}>
+            <Button
+              variant="primary"
+              className="btn-lg"
+              onClick={() => {
+                applyReset();
+                setScreen(activeType === "times-table" ? "select" : "random-setup");
+              }}
+            >
               Try Another
             </Button>
           }
@@ -188,11 +203,14 @@ function MultiplicationFlashcard({ settings, onBack }) {
     );
   }
 
+  // ── Times table selector screen ──
   if (screen === "select") {
     return (
       <div className="flashcard-container multiplication-container">
-        <ModeToggle />
-        <p className="multiplication-welcome"><WelcomeBanner name={name} /></p>
+        <TypeToggle activeType={activeType} onSwitch={switchType} />
+        <p className="multiplication-welcome">
+          <WelcomeBanner name={name} />
+        </p>
         <p>Which times table would you like to practice?</p>
         <div className="times-table-grid">
           {Array.from({ length: 15 }, (_, i) => (
@@ -206,11 +224,14 @@ function MultiplicationFlashcard({ settings, onBack }) {
     );
   }
 
+  // ── Random problem count selector screen ──
   if (screen === "random-setup") {
     return (
       <div className="flashcard-container multiplication-container">
-        <ModeToggle />
-        <p className="multiplication-welcome"><WelcomeBanner name={name} /></p>
+        <TypeToggle activeType={activeType} onSwitch={switchType} />
+        <p className="multiplication-welcome">
+          <WelcomeBanner name={name} />
+        </p>
         <p>How many multiplication problems would you like to solve?</p>
         <div className="problem-count-buttons">
           {[10, 25, 50, 100].map((n) => (
@@ -224,22 +245,39 @@ function MultiplicationFlashcard({ settings, onBack }) {
     );
   }
 
+  // ── Active session ──
   return (
     <div className="division-page multiplication-container">
       <div className="flashcard-container division-left">
-        <ModeToggle />
+        <TypeToggle activeType={activeType} onSwitch={switchType} />
         <FlashcardHeader
           current={displayNum}
           total={total}
           score={score}
-          label={screen === "times-table" ? `${selectedTable}'s Table — ${displayNum} of ${total}` : null}
+          label={
+            screen === "times-table"
+              ? `${selectedTable}'s Table — ${displayNum} of ${total}`
+              : null
+          }
         />
-        <Flashcard>{problem.a} × {problem.b} = ?</Flashcard>
+        <div
+          className={feedback === "correct" ? "multiplication-correct-pop" : undefined}
+          key={
+            feedback === "correct"
+              ? `celebrate-${celebrateTick}`
+              : `${screen}-${currentNum}-${problem.a}-${problem.b}`
+          }
+        >
+          <Flashcard>
+            {problem.a} × {problem.b} = ?
+          </Flashcard>
+        </div>
         {feedback === null && (
           <form onSubmit={handleSubmitAnswer} className="answer-form">
             <input
               ref={inputRef}
               type="number"
+              step="1"
               value={userAnswer}
               onChange={(e) => setUserAnswer(e.target.value)}
               className="answer-input"
@@ -252,7 +290,7 @@ function MultiplicationFlashcard({ settings, onBack }) {
           feedback={feedback}
           problem={problem}
           formatProblem={(p) => `${p.a} × ${p.b}`}
-          formatAnswer={(p) => `${p.answer}`}
+          formatAnswer={(p) => String(p.answer)}
           onNext={handleNext}
           onTryAgain={handleTryAgain}
           onPeek={handlePeek}
@@ -263,7 +301,12 @@ function MultiplicationFlashcard({ settings, onBack }) {
       <div className="division-right">
         <ScratchpadToggle hidden={hideScratchpad} onChange={setHideScratchpad} />
         {!hideScratchpad && (
-          <MultiplicationScratchpad a={problem.a} b={problem.b} clearSignal={clearSignal} onTotalChange={setScratchpadTotal} />
+          <MultiplicationScratchpad
+            a={problem.a}
+            b={problem.b}
+            clearSignal={clearSignal}
+            onTotalChange={setScratchpadTotal}
+          />
         )}
       </div>
     </div>

@@ -1,0 +1,143 @@
+.stacked-problem {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background: #fff;
+  border: 3px solid #50c878;
+  border-radius: 16px;
+  padding: 2rem 3rem 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+}
+
+/* Top number — right-aligned */
+.stacked-top {
+  font-size: 2.8rem;
+  font-weight: bold;
+  color: #213547;
+  font-family: "Courier New", monospace;
+  text-align: right;
+  width: 100%;
+}
+
+/* Bottom number row — operator on the left, number right-aligned */
+.stacked-bottom {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  width: 100%;
+  gap: 0.4rem;
+  font-size: 2.8rem;
+  font-weight: bold;
+  color: #213547;
+  font-family: "Courier New", monospace;
+}
+
+.stacked-operator {
+  font-size: 2.4rem;
+  color: #50c878;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.stacked-number {
+  text-align: right;
+}
+
+/* Horizontal line */
+.stacked-line {
+  width: 100%;
+  border-top: 3px solid #213547;
+  margin: 0.5rem 0 0.75rem;
+}
+
+/* Answer input area — right-aligned to match numbers above */
+.stacked-answer {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Form inside the answer area — adds breathing room between input and button */
+.stacked-answer form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.stacked-answer input {
+  font-size: 2.4rem;
+  font-weight: bold;
+  font-family: "Courier New", monospace;
+  color: #213547;
+  text-align: right;
+  border: none;
+  border-bottom: 2px dashed #50c878;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  padding: 0.1rem 0;
+  -moz-appearance: textfield;
+}
+
+.stacked-answer input::-webkit-outer-spin-button,
+.stacked-answer input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stacked-answer input:focus {
+  border-bottom-color: #3daf63;
+}
+
+.stacked-answer input::placeholder {
+  color: #bbb;
+  font-style: italic;
+}
+
+/* Feedback rendered inside the card below the answer */
+.stacked-feedback {
+  width: 100%;
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .stacked-problem {
+    background: #1e1e2e;
+    border-color: #50c878;
+  }
+
+  .stacked-top,
+  .stacked-bottom,
+  .stacked-number {
+    color: #e0e0e0;
+  }
+
+  .stacked-line {
+    border-color: #e0e0e0;
+  }
+
+  .stacked-answer input {
+    color: #e0e0e0;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .stacked-problem {
+    padding: 1.5rem 2rem 1.25rem;
+    min-width: 140px;
+  }
+
+  .stacked-top,
+  .stacked-bottom {
+    font-size: 2.2rem;
+  }
+
+  .stacked-answer input {
+    font-size: 2rem;
+  }
+}

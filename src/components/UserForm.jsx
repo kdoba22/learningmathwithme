@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import "./UserForm.css";
 import Button from "./Button";
+import BadWordsNext from "bad-words-next";
+import en from "bad-words-next/lib/en";
+
+// Initialise the filter once — shared across all renders
+const badWordsFilter = new BadWordsNext({ data: en });
 
 function UserForm({ onStart, initialSettings }) {
   const [name, setName] = useState(initialSettings?.name || "");
@@ -10,9 +15,8 @@ function UserForm({ onStart, initialSettings }) {
 
   const handleNameChange = (e) => {
     const input = e.target.value;
-    const forbiddenWords = ["badword1", "badword2", "badword3"];
 
-    if (forbiddenWords.some((word) => input.toLowerCase().includes(word))) {
+    if (input.trim() !== "" && badWordsFilter.check(input)) {
       setError("Please avoid using inappropriate language.");
     } else {
       setError("");

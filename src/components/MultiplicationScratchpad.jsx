@@ -2,40 +2,54 @@ import React, { useState, useEffect } from "react";
 import "./Scratchpad.css";
 import Button from "./Button";
 
-function toDigits(num, len = 4) {
-  return String(num).padStart(len, " ").split("");
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function toDigits(num, len) {
+  return String(Math.round(num)).padStart(len, " ").split("");
 }
 
-const emptyPartial = (len = 4) => ({ product: Array(len + 2).fill("") });
+function emptyRow(len) {
+  return Array(len).fill("");
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 function MultiplicationScratchpad({ a, b, clearSignal, onTotalChange }) {
-  const aLen = Math.max(String(a).length, String(b).length);
-  const [topCarry, setTopCarry] = useState(Array(aLen + 1).fill(""));
-  const [topNum, setTopNum] = useState(toDigits(a, aLen));
-  const [bottomNum, setBottomNum] = useState(toDigits(b, aLen));
-  const [partials, setPartials] = useState([emptyPartial(aLen)]);
-  const [total, setTotal] = useState(Array(aLen * 2 + 1).fill(""));
+  const intLen = Math.max(
+    String(Math.abs(a)).length,
+    String(Math.abs(b)).length
+  );
+
+  const initTop = () => toDigits(a, intLen);
+  const initBottom = () => toDigits(b, intLen);
+
+  const [topCarry, setTopCarry] = useState(() => emptyRow(intLen + 1));
+  const [topNum, setTopNum] = useState(initTop);
+  const [bottomNum, setBottomNum] = useState(initBottom);
+  const [partials, setPartials] = useState(() => [emptyRow(intLen + 2)]);
+  const [total, setTotal] = useState(() => emptyRow(intLen * 2 + 1));
 
   useEffect(() => {
-    setTopCarry(Array(aLen + 1).fill(""));
-    setTopNum(toDigits(a, aLen));
-    setBottomNum(toDigits(b, aLen));
-    setPartials([emptyPartial(aLen)]);
-    setTotal(Array(aLen * 2 + 1).fill(""));
+    setTopCarry(emptyRow(intLen + 1));
+    setTopNum(toDigits(a, intLen));
+    setBottomNum(toDigits(b, intLen));
+    setPartials([emptyRow(intLen + 2)]);
+    setTotal(emptyRow(intLen * 2 + 1));
     if (onTotalChange) onTotalChange("");
   }, [clearSignal, a, b]);
 
   const handleClear = () => {
-    setTopCarry(Array(aLen + 1).fill(""));
-    setTopNum(toDigits(a, aLen));
-    setBottomNum(toDigits(b, aLen));
-    setPartials([emptyPartial(aLen)]);
-    setTotal(Array(aLen * 2 + 1).fill(""));
+    setTopCarry(emptyRow(intLen + 1));
+    setTopNum(toDigits(a, intLen));
+    setBottomNum(toDigits(b, intLen));
+    setPartials([emptyRow(intLen + 2)]);
+    setTotal(emptyRow(intLen * 2 + 1));
     if (onTotalChange) onTotalChange("");
   };
 
-  const addRow = () => setPartials((prev) => [...prev, emptyPartial(aLen)]);
-  const removeRow = () => setPartials((prev) => prev.length > 1 ? prev.slice(0, -1) : prev);
+  const addRow = () => setPartials((prev) => [...prev, emptyRow(intLen * 2 + 1)]);
+  const removeRow = () =>
+    setPartials((prev) => (prev.length > 1 ? prev.slice(0, -1) : prev));
 
   const updateCell = (setter, arr, index, value) => {
     const updated = [...arr];
@@ -54,9 +68,9 @@ function MultiplicationScratchpad({ a, b, clearSignal, onTotalChange }) {
     setPartials((prev) =>
       prev.map((row, i) => {
         if (i !== rowIndex) return row;
-        const updated = [...row.product];
+        const updated = [...row];
         updated[colIndex] = value;
-        return { ...row, product: updated };
+        return updated;
       })
     );
   };
@@ -65,25 +79,45 @@ function MultiplicationScratchpad({ a, b, clearSignal, onTotalChange }) {
     <div className="scratchpad">
       <div className="scratchpad-title">
         Scratchpad
-        <Button variant="destructive" className="btn-sm" onClick={handleClear}>Clear</Button>
+        <Button variant="destructive" className="btn-sm" onClick={handleClear}>
+          Clear
+        </Button>
       </div>
 
       <div className="mult-scratchpad">
 
-        {/* Carry row with Clear Row button on the left */}
+        {/* Carry row */}
         <div className="mult-row carry-row">
-          <Button variant="secondary" className="btn-sm carry-clear-btn" onClick={() => setTopCarry(Array(aLen + 1).fill(""))}>Clear Row</Button>
+          <Button
+            variant="secondary"
+            className="btn-sm carry-clear-btn"
+            onClick={() => setTopCarry(emptyRow(intLen + 1))}
+          >
+            Clear Row
+          </Button>
           {topCarry.map((v, i) => (
-            <input key={i} type="text" maxLength={1} className="scratchpad-cell carry-cell"
-              value={v} onChange={(e) => updateCell(setTopCarry, topCarry, i, e.target.value)} />
+            <input
+              key={i}
+              type="text"
+              maxLength={1}
+              className="scratchpad-cell carry-cell"
+              value={v}
+              onChange={(e) => updateCell(setTopCarry, topCarry, i, e.target.value)}
+            />
           ))}
         </div>
 
         {/* Top number */}
         <div className="mult-row">
           {topNum.map((v, i) => (
-            <input key={i} type="text" maxLength={1} className="scratchpad-cell prefilled"
-              value={v} onChange={(e) => updateCell(setTopNum, topNum, i, e.target.value)} />
+            <input
+              key={i}
+              type="text"
+              maxLength={1}
+              className="scratchpad-cell prefilled"
+              value={v}
+              onChange={(e) => updateCell(setTopNum, topNum, i, e.target.value)}
+            />
           ))}
         </div>
 
@@ -91,8 +125,14 @@ function MultiplicationScratchpad({ a, b, clearSignal, onTotalChange }) {
         <div className="mult-row operator-row">
           <span className="operator-sign">×</span>
           {bottomNum.map((v, i) => (
-            <input key={i} type="text" maxLength={1} className="scratchpad-cell prefilled"
-              value={v} onChange={(e) => updateCell(setBottomNum, bottomNum, i, e.target.value)} />
+            <input
+              key={i}
+              type="text"
+              maxLength={1}
+              className="scratchpad-cell prefilled"
+              value={v}
+              onChange={(e) => updateCell(setBottomNum, bottomNum, i, e.target.value)}
+            />
           ))}
         </div>
 
@@ -102,9 +142,15 @@ function MultiplicationScratchpad({ a, b, clearSignal, onTotalChange }) {
         {partials.map((row, ri) => (
           <div key={ri} className="mult-partial-group">
             <div className="mult-row">
-              {row.product.map((v, i) => (
-                <input key={i} type="text" maxLength={1} className="scratchpad-cell"
-                  value={v} onChange={(e) => updatePartial(ri, i, e.target.value)} />
+              {row.map((v, i) => (
+                <input
+                  key={i}
+                  type="text"
+                  maxLength={1}
+                  className="scratchpad-cell"
+                  value={v}
+                  onChange={(e) => updatePartial(ri, i, e.target.value)}
+                />
               ))}
             </div>
           </div>
@@ -112,9 +158,13 @@ function MultiplicationScratchpad({ a, b, clearSignal, onTotalChange }) {
 
         {/* Add / remove row buttons */}
         <div className="ld-step-controls">
-          <Button variant="secondary" className="btn-sm" onClick={addRow}>+ Row</Button>
+          <Button variant="secondary" className="btn-sm" onClick={addRow}>
+            + Row
+          </Button>
           {partials.length > 1 && (
-            <Button variant="danger" className="btn-sm" onClick={removeRow}>− Row</Button>
+            <Button variant="danger" className="btn-sm" onClick={removeRow}>
+              − Row
+            </Button>
           )}
         </div>
 
@@ -123,8 +173,14 @@ function MultiplicationScratchpad({ a, b, clearSignal, onTotalChange }) {
         {/* Final total */}
         <div className="mult-row total-row">
           {total.map((v, i) => (
-            <input key={i} type="text" maxLength={1} className="scratchpad-cell total-cell"
-              value={v} onChange={(e) => updateTotal(i, e.target.value)} />
+            <input
+              key={i}
+              type="text"
+              maxLength={1}
+              className="scratchpad-cell total-cell"
+              value={v}
+              onChange={(e) => updateTotal(i, e.target.value)}
+            />
           ))}
         </div>
 

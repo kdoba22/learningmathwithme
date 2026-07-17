@@ -2,29 +2,34 @@ import React, { useState, useEffect } from "react";
 import "./Scratchpad.css";
 import Button from "./Button";
 
-function toDigits(num, len = 4) {
-  return String(num).padStart(len, " ").split("");
+// Pad a number string to 4 characters, left-padded with spaces
+function toDigits(num) {
+  return String(Math.round(num)).padStart(4, " ").split("");
 }
 
+const COLS = ["Th", "H", "T", "O"];
+
 function AdditionScratchpad({ a, b, clearSignal, onTotalChange }) {
-  const [carry, setCarry] = useState(["", "", "", ""]);
-  const [topNum, setTopNum] = useState(toDigits(a));
-  const [bottomNum, setBottomNum] = useState(toDigits(b));
-  const [total, setTotal] = useState(["", "", "", ""]);
+  const emptyRow = () => Array(4).fill("");
+
+  const [carry, setCarry] = useState(emptyRow);
+  const [topNum, setTopNum] = useState(() => toDigits(a));
+  const [bottomNum, setBottomNum] = useState(() => toDigits(b));
+  const [total, setTotal] = useState(emptyRow);
 
   useEffect(() => {
-    setCarry(["", "", "", ""]);
+    setCarry(emptyRow());
     setTopNum(toDigits(a));
     setBottomNum(toDigits(b));
-    setTotal(["", "", "", ""]);
+    setTotal(emptyRow());
     if (onTotalChange) onTotalChange("");
   }, [clearSignal, a, b]);
 
   const handleClear = () => {
-    setCarry(["", "", "", ""]);
+    setCarry(emptyRow());
     setTopNum(toDigits(a));
     setBottomNum(toDigits(b));
-    setTotal(["", "", "", ""]);
+    setTotal(emptyRow());
     if (onTotalChange) onTotalChange("");
   };
 
@@ -41,8 +46,6 @@ function AdditionScratchpad({ a, b, clearSignal, onTotalChange }) {
     if (onTotalChange) onTotalChange(updated.join("").trim());
   };
 
-  const cols = ["Th", "H", "T", "O"];
-
   return (
     <div className="scratchpad">
       <div className="scratchpad-title">
@@ -52,9 +55,14 @@ function AdditionScratchpad({ a, b, clearSignal, onTotalChange }) {
 
       <table className="scratchpad-table">
         <thead>
-          <tr>{cols.map((c) => <th key={c}>{c}</th>)}</tr>
+          <tr>
+            {COLS.map((c, i) => (
+              <th key={i}>{c}</th>
+            ))}
+          </tr>
         </thead>
         <tbody>
+          {/* Carry row */}
           <tr className="carry-row">
             {carry.map((v, i) => (
               <td key={i}>
@@ -63,9 +71,12 @@ function AdditionScratchpad({ a, b, clearSignal, onTotalChange }) {
               </td>
             ))}
             <td>
-              <Button variant="secondary" className="btn-sm" onClick={() => setCarry(["", "", "", ""])}>Clear Row</Button>
+              <Button variant="secondary" className="btn-sm"
+                onClick={() => setCarry(emptyRow())}>Clear Row</Button>
             </td>
           </tr>
+
+          {/* Top number (a) */}
           <tr>
             {topNum.map((v, i) => (
               <td key={i}>
@@ -74,6 +85,8 @@ function AdditionScratchpad({ a, b, clearSignal, onTotalChange }) {
               </td>
             ))}
           </tr>
+
+          {/* Bottom number (b) with + sign */}
           <tr className="operator-row">
             {bottomNum.map((v, i) => (
               <td key={i} className={i === 0 ? "operator-cell" : ""}>
@@ -83,6 +96,8 @@ function AdditionScratchpad({ a, b, clearSignal, onTotalChange }) {
               </td>
             ))}
           </tr>
+
+          {/* Total (answer) row */}
           <tr className="total-row">
             {total.map((v, i) => (
               <td key={i}>
@@ -94,6 +109,7 @@ function AdditionScratchpad({ a, b, clearSignal, onTotalChange }) {
         </tbody>
       </table>
 
+      {/* Legend */}
       <div className="scratchpad-legend">
         <span><strong>Th</strong> = Thousands</span>
         <span><strong>H</strong> = Hundreds</span>

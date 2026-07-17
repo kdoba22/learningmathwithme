@@ -1,6 +1,7 @@
 .scratchpad-table {
   border-collapse: collapse;
   margin: 0 auto;
+  width: 100%;
 }
 
 .scratchpad-table th {
@@ -166,3 +167,5 @@
     font-size: 1rem;
   }
 }
+
+
